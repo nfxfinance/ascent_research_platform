@@ -1,0 +1,10 @@
+./sessions/
+./modules/
+**/__pycache__/
+./.streamlit/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+

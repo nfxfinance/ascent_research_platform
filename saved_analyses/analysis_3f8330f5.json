@@ -1,0 +1,48 @@
+{
+  "analysis_id": "3f8330f5",
+  "timestamp": "20250712_041118",
+  "module": "Factor Analysis",
+  "description": "jup utilization zscore",
+  "signal_list": [
+    "zscore_SOL_utilization_3",
+    "zscore_SOL_utilization_5",
+    "zscore_SOL_utilization_7",
+    "zscore_SOL_utilization_10",
+    "zscore_SOL_utilization_15",
+    "zscore_SOL_utilization_30"
+  ],
+  "default_signal": "zscore_SOL_utilization_3",
+  "parameters": {
+    "labeling_method": "point",
+    "price_col": "close",
+    "signal_cols": [
+      "zscore_SOL_utilization_3",
+      "zscore_SOL_utilization_5",
+      "zscore_SOL_utilization_7",
+      "zscore_SOL_utilization_10",
+      "zscore_SOL_utilization_15",
+      "zscore_SOL_utilization_30"
+    ]
+  },
+  "status": "complete",
+  "last_updated": "20250712_041119",
+  "section_states": {
+    "1._signal_diagnostics_analysis": true,
+    "2._ic_decay_analysis": true,
+    "3._rolling_ic_analysis": true,
+    "4._rolling_ic_statistics": true,
+    "5._ic_distribution_analysis": true,
+    "6._ic_cumulative_analysis": true,
+    "7._ic_autocorrelation_analysis": true,
+    "8._person_&_spearman_correlation": true,
+    "9._ic_surface_robust": true,
+    "10._combined_diagnostics": true,
+    "11._mean_return_by_quantile": true,
+    "12._rolling_fdm": true,
+    "13._turnover": true,
+    "14._holding_period": true,
+    "15._roc_&_precision-recall_curves": true,
+    "16._negative_log_loss_curve": true,
+    "15._roc_&_precision_recall_curves": true
+  }
+}

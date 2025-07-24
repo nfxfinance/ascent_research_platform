@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  streamlit-base:
+    build: .
+    image: streamlit-app:latest
+    volumes:
+      - ./sessions:/app/sessions
+      - ./saved_analyses:/app/saved_analyses
+      - ./data:/app/data
+      - ./modules:/app/modules
+      - ./docs:/app/docs
+      - /home/marlon/ws/AscentQuantMaster:/app/AscentQuantMaster
+    restart: always
+
+  streamlit1:
+    image: streamlit-app:latest
+    container_name: streamlit1
+    environment:
+      - PORT=8501
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./sessions:/app/sessions
+      - ./saved_analyses:/app/saved_analyses
+      - ./data:/app/data
+      - ./modules:/app/modules
+      - ./docs:/app/docs
+      - /home/marlon/ws/AscentQuantMaster:/app/AscentQuantMaster
+    restart: always
+    depends_on:
+      - streamlit-base
+
+  streamlit2:
+    image: streamlit-app:latest
+    container_name: streamlit2
+    environment:
+      - PORT=8501
+    ports:
+      - "8502:8501"
+    volumes:
+      - ./sessions:/app/sessions
+      - ./saved_analyses:/app/saved_analyses
+      - ./data:/app/data
+      - ./modules:/app/modules
+      - ./docs:/app/docs
+      - /home/marlon/ws/AscentQuantMaster:/app/AscentQuantMaster
+    restart: always
+    depends_on:
+      - streamlit-base
+
+  streamlit3:
+    image: streamlit-app:latest
+    container_name: streamlit3
+    environment:
+      - PORT=8501
+    ports:
+      - "8503:8501"
+    volumes:
+      - ./sessions:/app/sessions
+      - ./saved_analyses:/app/saved_analyses
+      - ./data:/app/data
+      - ./modules:/app/modules
+      - ./docs:/app/docs
+      - /home/marlon/ws/AscentQuantMaster:/app/AscentQuantMaster
+    restart: always
+    depends_on:
+      - streamlit-base
+
+
+  nginx:
+    image: nginx:alpine
+    container_name: streamlit-nginx
+    depends_on:
+      - streamlit1
+      - streamlit2
+      - streamlit3
+    ports:
+      - "12580:12580"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: always
