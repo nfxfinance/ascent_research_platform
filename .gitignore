@@ -1,7 +1,6 @@
-./sessions/
-./modules/
+sessions/*
 **/__pycache__/
-./.streamlit/
+.streamlit/*
 *.pyc
 *.pyo
 *.pyd
