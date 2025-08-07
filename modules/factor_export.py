@@ -35,7 +35,7 @@ def auto_save_analysis_data(data_df, price_col: str, signal_cols: list, labeling
         st.info(f"🔄 Overwriting existing analysis: {analysis_id}")
     else:
         analysis_id = generate_analysis_id()
-        st.info(f"📝 Creating new analysis: {analysis_id}")
+        st.info(f"📝 Save Analysis: {analysis_id}")
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -58,6 +58,7 @@ def auto_save_analysis_data(data_df, price_col: str, signal_cols: list, labeling
         'description': description,
         'signal_list': signal_cols,
         'default_signal': signal_cols[0] if signal_cols else None,
+        'analysis_params': st.session_state.factor_analysis_params,
         'parameters': {
             'labeling_method': labeling_method,
             'price_col': price_col,

@@ -553,7 +553,7 @@ class FactorAnalysisModule:
                 st.write(error)
 
         # 生成分析报告按钮
-        if st.button("🚀 Generate Factor Analysis Report", type="primary", key="generate_factor_report"):
+        if st.button("🚀 Create New Analysis Report", type="primary", key="generate_factor_report"):
             if price_col and signal_cols:
                 self._generate_factor_analysis_report(df, price_col, signal_cols, labeling_method)
             else:
@@ -619,7 +619,7 @@ class FactorAnalysisModule:
                 # 初始化并运行分析
                 self._initialize_section_states()
                 st.session_state._just_generated_report = True
-                self.run_all_analysis()
+                # self.run_all_analysis()
 
         except Exception as e:
             st.error(f"❌ Error occurred while generating report: {str(e)}")
@@ -656,7 +656,10 @@ class FactorAnalysisModule:
                 overwrite_mode=overwrite_mode, description=analysis_description or None
             )
 
+            need_reload_url = False
             if analysis_id:
+                if st.session_state.current_analysis_id is not None and st.session_state.current_analysis_id != analysis_id:
+                    need_reload_url = True 
                 st.session_state.current_analysis_id = analysis_id
                 st.session_state.current_analysis_description = analysis_description or f"default_{analysis_id}"
 
@@ -665,6 +668,11 @@ class FactorAnalysisModule:
                     st.success(f"✅ Analysis data updated for ID: `{analysis_id}`")
                 else:
                     st.success(f"✅ Analysis data saved with new ID: `{analysis_id}`")
+
+            if need_reload_url:
+                st.query_params["page"] = "factor"
+                st.query_params["id"] = st.session_state.current_analysis_id
+                st.rerun()
         except ImportError:
             st.warning("Factor export module not available")
         except Exception as e:
