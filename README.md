@@ -12,8 +12,6 @@ A comprehensive Streamlit-based quantitative analysis and backtesting platform f
 # 1. Clone the repository
 git clone https://github.com/nfxfinance/ascent_research_platform
 cd ascent_research_platform
-# OPT: unzip the saved_analyses.tar.gz file, to load all the saved analysis results
-tar -zxvf saved_analyses.tar.gz saved_analyses
 
 # 2. Create virtual environment
 python -m venv venv
@@ -27,3 +25,13 @@ pip install -r requirements.txt
 # 5. Start the application
 streamlit run main_app.py --server.port 12851 --server.address 0.0.0.0
 ```
+
+
+### Mount Historical Analysis
+
+```bash
+mkdir saved_analyses
+# 密码是通用密码
+sshfs -o port=10022 marlon@h.adpolitan.com:/mnt/datas/saved_analyses ./saved_analyses
+```
+
