@@ -139,24 +139,24 @@ def get_saved_parameters_for_section(section_key: str) -> dict:
         return {}
 
     # Convert section key to function name
-    # For example: "1._signal_diagnostics_analysis" -> "plot_signal_diagnostics_plotly"
+    # For example: "_signal_diagnostics_analysis" -> "plot_signal_diagnostics_plotly"
     section_to_func_map = {
-        '1._signal_diagnostics_analysis': 'plot_signal_diagnostics_plotly',
-        '2._ic_decay_analysis': 'plot_ic_decay_summary',
-        '3._rolling_ic_analysis': 'plot_rolling_ic',
-        '4._rolling_ic_statistics': 'calc_rolling_ic_stats',
-        '5._ic_distribution_analysis': 'plot_ic_distribution',
-        '6._ic_cumulative_analysis': 'plot_ic_cumulative_ir',
-        '7._ic_autocorrelation_analysis': 'plot_ic_autocorrelation',
-        '8._person_&_spearman_correlation': 'plot_correlation_matrix',
-        '9._ic_surface_robust': 'plot_ic_surface_robust',
-        '10._combined_diagnostics': 'plot_combined_diagnostics',
-        '11._mean_return_by_quantile': 'plot_mean_return_by_quantile',
-        '12._rolling_fdm': 'plot_rolling_fdm',
-        '13._turnover': 'calc_turnover',
-        '14._holding_period': 'calculate_signal_holding_period_by_sign',
-        '15._roc_&_precision-recall_curves': 'plot_roc_curve',  # Special case, handled separately
-        '16._negative_log_loss_curve': 'plot_negative_log_loss_plotly',
+        '_signal_diagnostics_analysis': 'plot_signal_diagnostics_plotly',
+        '_ic_decay_analysis': 'plot_ic_decay_summary',
+        '_rolling_ic_analysis': 'plot_rolling_ic',
+        '_rolling_ic_statistics': 'calc_rolling_ic_stats',
+        '_ic_distribution_analysis': 'plot_ic_distribution',
+        '_ic_cumulative_analysis': 'plot_ic_cumulative_ir',
+        '_ic_autocorrelation_analysis': 'plot_ic_pacf',
+        '_person_&_spearman_correlation': 'plot_correlation_matrix',
+        '_ic_surface_robust': 'plot_ic_surface_robust',
+        '_combined_diagnostics': 'plot_combined_diagnostics',
+        '_mean_return_by_quantile': 'plot_mean_return_by_quantile',
+        '_rolling_fdm': 'plot_rolling_fdm',
+        '_turnover': 'calc_turnover',
+        '_holding_period': 'calculate_signal_holding_period_by_sign',
+        '_roc_&_precision-recall_curves': 'plot_roc_curve',  # Special case, handled separately
+        '_negative_log_loss_curve': 'plot_negative_log_loss_plotly',
     }
 
     func_name = section_to_func_map.get(section_key)
@@ -315,6 +315,9 @@ def load_analysis_by_id(analysis_id: str):
             # Load from separate CSV file (preferred)
             import pandas as pd
             original_df = pd.read_csv(csv_file)
+            st.session_state.dataframe = original_df
+            st.session_state.start_date = original_df['timestamp'].min()
+            st.session_state.end_date = original_df['timestamp'].max()
         else:
             st.error("❌ Original data not found in saved analysis")
             return False
@@ -341,22 +344,21 @@ def load_analysis_by_id(analysis_id: str):
             # except ImportError:
             #     st.warning("⚠️ IC extensions not available - some analysis methods may not work")
 
-            # Format the data
-            formatted_df = format_data(original_df)
+            st.session_state.formatted_df = format_data(original_df)
 
             # Extract parameters
             params = data['parameters']
-            price_col = params['price_col']
-            signal_cols = params['signal_cols']
-            labeling_method = params.get('labeling_method', 'point')
+            st.session_state.price_col = params['price_col']
+            st.session_state.signal_cols = params['signal_cols']
+            st.session_state.labeling_method = params.get('labeling_method', 'point')
 
             # Create new SignalPerf instance
             sp = SignalPerf(
                 mode='local',
-                data=formatted_df,
-                price_col=price_col,
-                signal_cols=signal_cols,
-                labeling_method=labeling_method
+                data=st.session_state.formatted_df,
+                price_col=st.session_state.price_col,
+                signal_cols=st.session_state.signal_cols,
+                labeling_method=st.session_state.labeling_method
             )
 
             # Restore session state
@@ -675,6 +677,12 @@ def render_analysis_files_list():
             if st.button("🔄 Load", key="aggrid_load_btn"):
                 if len(selected_ids) == 1:
                     if load_analysis_by_id(selected_ids[0]):
+                        st.session_state.current_analysis_id = selected_ids[0]
+                        # 更新页面url path
+                        # st.update_page_config(url=f"/?page=factor&id={selected_ids[0]}")
+                        # Streamlit 没有 update_page_config 方法，这里可以考虑用 st.experimental_set_query_params 代替
+                        st.query_params["page"] = "factor"
+                        st.query_params["id"] = selected_ids[0]
                         st.success(f"✅ Analysis {selected_ids[0]} loaded successfully")
                         st.rerun()
                 else:

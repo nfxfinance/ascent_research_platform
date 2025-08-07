@@ -11,7 +11,7 @@
 
 from .parameter_parser import ParameterParser
 from .chart_renderer import ChartRenderer, create_download_mhtml_button
-from .analysis_sections import AnalysisSection, AutoAnalysisSection, RollingICSection
+from .analysis_sections import AnalysisSection, AutoAnalysisSection
 from .data_processor import DataProcessor
 from .factor_analysis_module import FactorAnalysisModule
 
@@ -21,7 +21,6 @@ __all__ = [
     'create_download_mhtml_button',
     'AnalysisSection',
     'AutoAnalysisSection',
-    'RollingICSection',
     'DataProcessor',
     'FactorAnalysisModule'
 ]

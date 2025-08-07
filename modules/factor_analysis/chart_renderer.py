@@ -98,9 +98,9 @@ class ChartRenderer:
                 return
 
             buf = io.BytesIO()
-            fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+            fig.savefig(buf, format='png', bbox_inches='tight')
             buf.seek(0)
-            st.image(buf, use_container_width=True)
+            st.image(buf)
             buf.close()
 
         except Exception as e:
@@ -114,7 +114,7 @@ class ChartRenderer:
             df_display = df.copy()
             numeric_cols = df_display.select_dtypes(include=[np.number]).columns
             df_display[numeric_cols] = df_display[numeric_cols].round(4)
-            st.dataframe(df_display, use_container_width=True, height=400, key=key)
+            st.dataframe(df_display, width=1200, height=400, key=key)
         else:
             st.text(str(df))
 
@@ -236,43 +236,3 @@ class ChartRenderer:
                     st.write(f"Content: {repr(result)[:1000]}...")  # Limit display length
                 except:
                     st.write("Cannot display result content")
-
-    @staticmethod
-    def render_side_by_side_charts(chart1, chart2, chart1_title="Chart 1", chart2_title="Chart 2", key=None):
-        """Render two charts side by side with controlled size"""
-        try:
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown(f"**{chart1_title}**")
-                if hasattr(chart1, 'savefig') and callable(getattr(chart1, 'savefig')):
-                    # Matplotlib chart
-                    buf1 = io.BytesIO()
-                    chart1.savefig(buf1, format='png', dpi=150, bbox_inches='tight')
-                    buf1.seek(0)
-                    st.image(buf1, use_container_width=True)
-                    buf1.close()
-                elif hasattr(chart1, '__module__') and chart1.__module__ and 'plotly' in chart1.__module__:
-                    # Plotly chart
-                    st.plotly_chart(chart1, use_container_width=False)
-                else:
-                    st.warning("⚠️ Chart 1 type not supported")
-
-            with col2:
-                st.markdown(f"**{chart2_title}**")
-                if hasattr(chart2, 'savefig') and callable(getattr(chart2, 'savefig')):
-                    # Matplotlib chart
-                    buf2 = io.BytesIO()
-                    chart2.savefig(buf2, format='png', dpi=150, bbox_inches='tight')
-                    buf2.seek(0)
-                    st.image(buf2, use_container_width=True)
-                    buf2.close()
-                elif hasattr(chart2, '__module__') and chart2.__module__ and 'plotly' in chart2.__module__:
-                    # Plotly chart
-                    st.plotly_chart(chart2, use_container_width=False)
-                else:
-                    st.warning("⚠️ Chart 2 type not supported")
-
-        except Exception as e:
-            st.error(f"❌ Side-by-side chart render failed: {e}")
-            logger.error(f"Side-by-side chart render error: {e}\n{traceback.format_exc()}")

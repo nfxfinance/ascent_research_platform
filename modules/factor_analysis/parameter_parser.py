@@ -4,7 +4,7 @@ import streamlit as st
 import inspect
 import ast
 import typing
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Literal
 
 # Type mapping for parameter inference
 TYPE_MAPPING = {
@@ -123,7 +123,16 @@ class ParameterParser:
             return st.checkbox(f"✅ {name}", value=bool(default_val), help=f"Enable {name}")
 
         # Handle Literal type
-        if hasattr(annotation, '__origin__') and str(annotation.__origin__) == 'typing.Literal':
+        if (hasattr(annotation, '__origin__') and
+            (str(annotation.__origin__) == 'typing.Literal' or
+             getattr(annotation, '__origin__', None) is getattr(typing, 'Literal', None))):
+            options = list(annotation.__args__)
+            default_idx = options.index(default_val) if default_val in options else 0
+            return st.selectbox(f"🔽 {name}", options=options, index=default_idx, help=f"Select {name} type")
+
+        # Alternative detection for Python < 3.8 using typing_extensions
+        if (hasattr(annotation, '__origin__') and
+            'Literal' in str(annotation.__origin__)):
             options = list(annotation.__args__)
             default_idx = options.index(default_val) if default_val in options else 0
             return st.selectbox(f"🔽 {name}", options=options, index=default_idx, help=f"Select {name} type")
@@ -225,16 +234,16 @@ class ParameterParser:
 
         # Render primary parameters (single column)
         if param_groups['primary']:
-            st.markdown("**📊 Signal Parameters**")
+            # st.markdown("**📊 Signal Parameters**")
             for name, param_info in param_groups['primary']:
                 form_data[name] = ParameterParser.create_form_widget(name, param_info, signal_list, default_signal, export_defaults)
 
         # Render time parameters (2 columns)
         if param_groups['time']:
-            st.markdown("**⏰ Time Parameters**")
+            # st.markdown("**⏰ Time Parameters**")
             time_params = param_groups['time']
-            for i in range(0, len(time_params), 2):
-                cols = st.columns(2)
+            for i in range(0, len(time_params), 6):
+                cols = st.columns(6)
                 for j, col in enumerate(cols):
                     if i + j < len(time_params):
                         name, param_info = time_params[i + j]
@@ -243,10 +252,10 @@ class ParameterParser:
 
         # Render display parameters (2 columns)
         if param_groups['display']:
-            st.markdown("**🎨 Display Parameters**")
+            # st.markdown("**🎨 Display Parameters**")
             display_params = param_groups['display']
-            for i in range(0, len(display_params), 2):
-                cols = st.columns(2)
+            for i in range(0, len(display_params), 6):
+                cols = st.columns(6)
                 for j, col in enumerate(cols):
                     if i + j < len(display_params):
                         name, param_info = display_params[i + j]
@@ -255,10 +264,10 @@ class ParameterParser:
 
         # Render numeric parameters (3 columns)
         if param_groups['numeric']:
-            st.markdown("**🔢 Numeric Parameters**")
+            # st.markdown("**🔢 Numeric Parameters**")
             numeric_params = param_groups['numeric']
-            for i in range(0, len(numeric_params), 3):
-                cols = st.columns(3)
+            for i in range(0, len(numeric_params), 6):
+                cols = st.columns(6)
                 for j, col in enumerate(cols):
                     if i + j < len(numeric_params):
                         name, param_info = numeric_params[i + j]
@@ -267,10 +276,10 @@ class ParameterParser:
 
         # Render boolean parameters (4 columns)
         if param_groups['boolean']:
-            st.markdown("**✅ Boolean Parameters**")
+            # st.markdown("**✅ Boolean Parameters**")
             boolean_params = param_groups['boolean']
-            for i in range(0, len(boolean_params), 4):
-                cols = st.columns(4)
+            for i in range(0, len(boolean_params), 6):
+                cols = st.columns(6)
                 for j, col in enumerate(cols):
                     if i + j < len(boolean_params):
                         name, param_info = boolean_params[i + j]
@@ -280,10 +289,10 @@ class ParameterParser:
         # Render advanced parameters (2 columns)
         if param_groups['advanced']:
             # with st.expander("🔧 Advanced Parameters", expanded=False):
-            st.markdown("**🔧 Advanced Parameters**")
+            # st.markdown("**🔧 Advanced Parameters**")
             advanced_params = param_groups['advanced']
-            for i in range(0, len(advanced_params), 2):
-                cols = st.columns(2)
+            for i in range(0, len(advanced_params), 6):
+                cols = st.columns(6)
                 for j, col in enumerate(cols):
                     if i + j < len(advanced_params):
                         name, param_info = advanced_params[i + j]
@@ -306,6 +315,15 @@ class ParameterParser:
             inferred_type = ParameterParser.infer_parameter_type(name, annotation, default_val)
 
             try:
+                # Handle Literal type first - values from selectbox are already the correct type
+                if (hasattr(annotation, '__origin__') and
+                    (str(annotation.__origin__) == 'typing.Literal' or
+                     getattr(annotation, '__origin__', None) is getattr(typing, 'Literal', None) or
+                     'Literal' in str(annotation.__origin__))):
+                    # For Literal types, the value from selectbox is already the correct type
+                    processed[name] = value
+                    continue
+
                 # If value is already correct type (from presets), use directly
                 if not isinstance(value, str):
                     processed[name] = value
