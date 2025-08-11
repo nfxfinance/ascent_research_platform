@@ -659,7 +659,7 @@ class FactorAnalysisModule:
             need_reload_url = False
             if analysis_id:
                 if st.session_state.current_analysis_id is not None and st.session_state.current_analysis_id != analysis_id:
-                    need_reload_url = True 
+                    need_reload_url = True
                 st.session_state.current_analysis_id = analysis_id
                 st.session_state.current_analysis_description = analysis_description or f"default_{analysis_id}"
 
@@ -849,11 +849,33 @@ class FactorAnalysisModule:
                         labeling_method=st.session_state.labeling_method
                     )
 
-            st.date_input("choose date range",
-                         value=(st.session_state.start_date, st.session_state.end_date),
-                         label_visibility="collapsed", key="factor_date_range",
-                         format="YYYY-MM-DD", help="choose date range",
-                         on_change=on_date_range_change)
+            def on_reset_date_range():
+                """重置日期范围到全数据范围"""
+                if not st.session_state.formatted_df.empty and 'timestamp' in st.session_state.formatted_df.columns:
+                    min_date = st.session_state.formatted_df['timestamp'].min().date()
+                    max_date = st.session_state.formatted_df['timestamp'].max().date()
+                    st.session_state.start_date = min_date
+                    st.session_state.end_date = max_date
+                    st.session_state.factor_signal_perf = SignalPerf(
+                        mode='local', data=st.session_state.formatted_df,
+                        price_col=st.session_state.price_col,
+                        signal_cols=st.session_state.signal_cols,
+                        labeling_method=st.session_state.labeling_method
+                    )
+
+            col1, col2 = st.columns([3, 1])
+
+            with col1:
+                st.date_input("choose date range",
+                             value=(st.session_state.start_date, st.session_state.end_date),
+                             label_visibility="collapsed", key="factor_date_range",
+                             format="YYYY-MM-DD", help="choose date range",
+                             on_change=on_date_range_change)
+
+            with col2:
+                if st.button("Reset", key="reset_date_range_btn",
+                           help="Reset to full data range", on_click=on_reset_date_range):
+                    st.rerun()
 
     def _render_download_button(self):
         """渲染下载按钮"""
