@@ -46,6 +46,7 @@ try:
     from modules.backtesting import BacktestingModule
     from modules.data_management import DataManagementModule
     from modules.result_manager import ResultManager
+    from modules.eda_analysis import EDAAnalysisModule
     from lib.utils import setup_logger
     from routes import (
         MODULE_ROUTES, ROUTE_MODULES, ROUTE_METADATA,
@@ -424,12 +425,13 @@ def render_navigation():
         st.markdown("### 🧭 Module Navigation")
 
         # Available modules list
-        available_modules = ["Factor Analysis", "Data Management", "Strategy Backtesting", "Result Management", "Usage Guide"]
+        available_modules = ["Factor Analysis", "Data Management", "EDA Analysis", "Strategy Backtesting", "Result Management", "Usage Guide"]
 
         for module_name in available_modules:
             icon = {
                 "Factor Analysis": "🔍",
                 "Data Management": "📊",
+                "EDA Analysis": "📊",
                 "Strategy Backtesting": "📈",
                 "Result Management": "📋",
                 "Usage Guide": "📖"
@@ -471,6 +473,10 @@ def render_current_module():
         elif module_name == "Data Management":
             data_module = DataManagementModule()
             data_module.render()
+
+        elif module_name == "EDA Analysis":
+            eda_module = EDAAnalysisModule()
+            eda_module.render()
 
         elif module_name == "Strategy Backtesting":
             backtest_module = BacktestingModule()
@@ -521,6 +527,14 @@ def render_placeholder_module(module_name, error=None):
             "🧹 Data cleaning and processing",
             "💾 Data storage management",
             "📊 Data quality inspection"
+        ],
+        "EDA Analysis": [
+            "📊 Automated data profiling with ydata-profiling",
+            "🔍 Comprehensive statistical analysis",
+            "📈 Interactive visualizations and charts",
+            "🎯 Missing data pattern analysis",
+            "📋 Correlation and relationship analysis",
+            "💾 HTML report generation and export"
         ],
         "Strategy Backtesting": [
             "📈 Strategy construction and configuration",
@@ -573,18 +587,19 @@ def render_footer():
 
     # Quick navigation buttons
     st.markdown("### ⚡ Quick Navigation")
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
 
     modules = [
         ("Factor Analysis", "🔍"),
         ("Data Management", "📊"),
+        ("EDA Analysis", "📊"),
         ("Strategy Backtesting", "📈"),
         ("Result Management", "📋"),
         ("Usage Guide", "📖")
     ]
 
     for i, (module_name, icon) in enumerate(modules):
-        with [col1, col2, col3, col4, col5][i]:
+        with [col1, col2, col3, col4, col5, col6][i]:
             if st.button(f"{icon} {module_name}", key=f"footer_nav_{module_name}"):
                 st.session_state.current_module = module_name
                 try:

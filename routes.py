@@ -12,6 +12,7 @@ MODULE_ROUTES = {
     "files": "File Management",          # 文件管理模块
     "data": "Data Management",           # 数据管理模块
     "factor": "Factor Analysis",         # 因子分析模块
+    "eda": "EDA Analysis",               # EDA 探索性数据分析模块
     "backtest": "Strategy Backtesting",  # 策略回测模块
     "result": "Result Management",       # 结果管理模块
     "portfolio": "Portfolio Optimization", # 投资组合优化模块 (预留)
@@ -26,6 +27,7 @@ ROUTE_DESCRIPTIONS = {
     "files": "File upload, management and database records",
     "data": "Data source integration, cleaning, storage and updates",
     "factor": "Factor mining, effectiveness validation, portfolio analysis",
+    "eda": "Exploratory data analysis with automated profiling reports",
     "backtest": "Strategy backtesting, performance analysis, risk metrics",
     "result": "Report generation, data export, result sharing",
     "portfolio": "Modern portfolio theory, risk-return analysis, asset allocation",
@@ -114,22 +116,28 @@ ROUTE_METADATA = {
         "priority": 2,
         "category": "Analysis"
     },
+    "eda": {
+        "icon": "📊",
+        "color": "#17becf",
+        "priority": 3,
+        "category": "Analysis"
+    },
     "backtest": {
         "icon": "📈",
         "color": "#2ca02c",
-        "priority": 3,
+        "priority": 4,
         "category": "Testing"
     },
     "result": {
         "icon": "📋",
         "color": "#d62728",
-        "priority": 4,
+        "priority": 5,
         "category": "Output"
     },
     "usage": {
         "icon": "📖",
         "color": "#9467bd",
-        "priority": 5,
+        "priority": 6,
         "category": "Documentation"
     }
 }
